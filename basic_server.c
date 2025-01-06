@@ -1,6 +1,6 @@
 #include "pipe_networking.h"
 
-int main() {
+int main(int argc, char const *argv[]){
   int to_client;
   int from_client;
 
