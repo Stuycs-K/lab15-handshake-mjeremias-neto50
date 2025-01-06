@@ -17,7 +17,6 @@ int server_setup() {
   int from_client = 0;
   mkfifo(WKP, 666);
   from_client = open(WKP, O_RDONLY);
-  remove(WKP);
   return from_client;
 }
 
@@ -31,9 +30,9 @@ int server_setup() {
   returns the file descriptor for the upstream pipe (see server setup).
   =========================*/
 int server_handshake(int *to_client) {
+  int send;
+  int recv;
   printf("SERVER SIDE\n" );
-  int number;
-  int prevnumber;
   //1-4
   int from_client = server_setup();
   //5
@@ -42,14 +41,13 @@ int server_handshake(int *to_client) {
   //6
   *to_client = open(buffer, O_WRONLY);
   //7
-  prevnumber = atoi(buffer);
-  number == prevnumber ++;
-  snprintf(buffer, 100, "%d", number);
+  send = atoi(buffer);
+  snprintf(buffer, 100, "%d", send);
   write(*to_client, buffer, 100);
   //9
   read(from_client, buffer, 100);
-  number = atoi(buffer);
-  if((prevnumber +=2 )==number){
+  recv = atoi(buffer);
+  if((recv+=2 )==send){
     printf("WE GOOD!\n");
   }
   printf("END\n");
@@ -67,21 +65,24 @@ int server_handshake(int *to_client) {
   returns the file descriptor for the downstream pipe.
   =========================*/
 int client_handshake(int *to_server) {
+  int send;
+  int recv;
   printf("CLIENT SIDE\n" );
   //3
   int from_server;
   int pid = (int)getpid();
+  send = pid;
   char buffer[100];
-  snprintf(buffer, 100, "%d", pid);
-  mkfifo(buffer, 666);
-  *to_server = open(WKP, O_RDONLY);
+  snprintf(buffer, 100, "%d", send);
+  mkfifo(buffer, 0666);
+  *to_server = open(WKP, O_WRONLY);
   write(*to_server, buffer, 100);
   from_server = open(buffer, O_RDONLY);
-  int endnum = pid + 1;
-  if(atoi(buffer) == endnum){
+  recv = atoi(buffer);
+  if(recv == (send ++)){
     printf("WE GOOD!\n");
   }
-  snprintf(buffer, 100, "%d", endnum);
+  snprintf(buffer, 100, "%d", recv+1);
   write(*to_server, buffer, 100);
   printf("END\n");
   return from_server;
