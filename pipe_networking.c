@@ -96,5 +96,19 @@ int client_handshake(int *to_server) {
   =========================*/
 int server_connect(int from_client) {
   int to_client  = 0;
-  return to_client;
+  char buffer[100];
+  read(from_client, buffer, 100);
+  //6
+  *to_client = open(buffer, O_WRONLY);
+  //7
+  char *buffer2 = buffer + 1;
+  send = atoi(buffer2);
+  snprintf(buffer, 100, "%d", send);
+  write(*to_client, buffer, 100);
+  //9
+  read(from_client, buffer, 100);
+  recv = atoi(buffer);
+  if((recv+=2 )==send){
+  }
+  return from_client;
 }
