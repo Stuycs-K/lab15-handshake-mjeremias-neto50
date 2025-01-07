@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -6,10 +7,11 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 #ifndef NETWORKING_H
 #define NETWORKING_H
-#define WKP "mario"
+#define WKP "/mario"
 
 #define HANDSHAKE_BUFFER_SIZE 10
 #define BUFFER_SIZE 1000
