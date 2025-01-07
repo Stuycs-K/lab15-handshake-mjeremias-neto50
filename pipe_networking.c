@@ -17,6 +17,7 @@ int server_setup() {
   int from_client = 0;
   mkfifo(WKP, 666);
   from_client = open(WKP, O_RDONLY);
+  remove(WKP);
   return from_client;
 }
 
@@ -32,7 +33,6 @@ int server_setup() {
 int server_handshake(int *to_client) {
   int send;
   int recv;
-  printf("SERVER SIDE\n" );
   //1-4
   int from_client = server_setup();
   //5
@@ -41,16 +41,15 @@ int server_handshake(int *to_client) {
   //6
   *to_client = open(buffer, O_WRONLY);
   //7
-  send = atoi(buffer);
+  char *buffer2 = buffer + 1;
+  send = atoi(buffer2);
   snprintf(buffer, 100, "%d", send);
   write(*to_client, buffer, 100);
   //9
   read(from_client, buffer, 100);
   recv = atoi(buffer);
   if((recv+=2 )==send){
-    printf("WE GOOD!\n");
   }
-  printf("END\n");
   return from_client;
 }
 
@@ -67,24 +66,22 @@ int server_handshake(int *to_client) {
 int client_handshake(int *to_server) {
   int send;
   int recv;
-  printf("CLIENT SIDE\n" );
   //3
   int from_server;
   int pid = (int)getpid();
   send = pid;
   char buffer[100];
-  snprintf(buffer, 100, "%d", send);
+  snprintf(buffer, 100, "/%d", send);
   mkfifo(buffer, 0666);
   *to_server = open(WKP, O_WRONLY);
   write(*to_server, buffer, 100);
   from_server = open(buffer, O_RDONLY);
+  remove(buffer);
   recv = atoi(buffer);
   if(recv == (send ++)){
-    printf("WE GOOD!\n");
   }
   snprintf(buffer, 100, "%d", recv+1);
   write(*to_server, buffer, 100);
-  printf("END\n");
   return from_server;
 }
 
